@@ -1,0 +1,14 @@
+<h1>
+  Articles
+</h1>
+
+<ol>
+  {{#each data}}
+      <li>
+        {{#each this}}
+          <a href="{{this.link}}">{{this.title}}</a>
+          <p>{{this.summary}}</p>
+        {{/each}}
+      </li>
+  {{/each}}
+</ol>
