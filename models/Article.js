@@ -10,6 +10,7 @@ const ArticleSchema = new Schema({
 	summary: String,
 	// url must be of type string
 	link: String,
+	timeAdded: Number,
 	comments: [
 		{
 			type: Schema.Types.ObjectId,
