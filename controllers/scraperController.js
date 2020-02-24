@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const cheerio = require('cheerio');
+const moment = require('moment');
 
 const Articles = require('../models/Article');
+const Comment = require('../models/Comment');
 
 const getArticles = async () => {
 	let url = 'https://www.nytimes.com/section/world';
@@ -27,12 +29,12 @@ const getArticles = async () => {
 				link = 'https://www.nytimes.com/' + link;
 				let summary = $(ele)
 					.find('p')
-          .text();
-        let timeAdded = Date.now();
-        let result = {title, link, summary, timeAdded};
-        console.log(result);
+					.text();
+				let timeAdded = Date.now();
+				let result = { title, link, summary, timeAdded };
+				// console.log(result);
 				// pushes the data to the array of objects
-        results.push(result);
+				results.push(result);
 			});
 	} catch (error) {
 		console.log(error);
@@ -75,20 +77,60 @@ const addArticles = async (articleArr) => {
 	}
 };
 
+const addComment = async (comment, article) => {
+	await Comment.create({ body: comment })
+		.then(function(dbComment) {
+			Articles.findOneAndUpdate(
+				{ _id: article },
+				{ $push: { comments: dbComment._id } },
+				{ new: true }
+			);
+		})
+		.then(function(dbArticle) {
+			res.json(dbArticle);
+		})
+		.catch(function(error) {
+			console.log(error);
+		});
+};
+
 router.get('/', async (req, res) => {
-	const articles = await Articles.find({}).sort({timeAdded: -1});
-	// console.log(articles);
-	res.render('index', { data: articles });
+	const data = await Articles.find({}).sort({ timeAdded: -1 });
+	// console.log({articles: data});
+	res.render('index', { articles: data });
 });
 
-router.get('/api/getArticles', async (req, res) => {
+router.get('/api/get-articles', async (req, res) => {
 	// get articles
 	const data = await getArticles();
-  await addArticles(data);
+	await addArticles(data);
 
-  // debug
-  const collection = await Articles.find({});
+	// debug
+	const collection = await Articles.find({});
 	res.json(collection);
+});
+
+router.post('/api/post-comment', async (req, res) => {
+	const data = req.body;
+
+	// add the comment to the comment db
+	await Comment.create({ body: data.body })
+		.then(function(dbComment) {
+			// find the article to be updated,
+			// push the comment _id to the comments array
+			return Articles.findOneAndUpdate(
+				{ _id: data.articleToComment },
+				{ $push: { comments: dbComment._id } },
+				{ new: true }
+			);
+		})
+		// push the article back to the client
+		.then(function(dbArticle) {
+			res.json(dbArticle);
+		})
+		.catch(function(error) {
+			console.log(error);
+		});
 });
 
 module.exports = router;

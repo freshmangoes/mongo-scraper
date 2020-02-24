@@ -1,31 +1,53 @@
-<div class="col-sm-12">
+<div class="col-xs-12">
+
   <div class="row">
     <div class="col">
-      <h1>Articles</h1>
-      <button class="btn btn-outline-primary scrape-btn">Get New Articles</button>
+      <div class="jumbotron text-light bg-secondary text-center"> 
+        <h1>New York Times Scraper</h1>
+      </div>
+      <button class="btn btn-outline-primary scrape-btn mb-4">Get New Articles</button>
     </div>
   </div>
+
   <div class="row">
     <div class="col">
-      {{#each data}}
-        <div class="card">
-          <div class="card-body">
-            {{#each this}}
-              {{#if title}}
+
+      {{#each articles}}
+        <div class="card border-info mb-4 bg-dark text-light">
+          {{#each this}}
+            {{#if timeAdded}}
+              <div class="card-header bg-info">
                 <div class="card-title">
-                  <a href="{{link}}">{{title}}</a>
+                  <a class="text-dark " href="{{link}}">{{title}}</a>
                 </div>
-              {{/if}}
-              {{#if summary}}
+              </div>
+            {{/if}}
+              
+            {{#if timeAdded}}
+              <div class="card-body">
                 <div class="card-text">
                   <p>{{summary}}</p>
                 </div>
-              {{/if}}
-            {{/each}}
-          </div>
+              </div>
+            {{/if}}
+
+            {{#if timeAdded}}
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group bg-dark text-light mt-2">
+                      <input data-_id="{{_id}}"type="text" class="bg-dark text-light border-info comment-input form-control">
+                      <button type="submit" class="btn btn-info comment-btn mt-3" data-_id="{{_id}}">Add Comment</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
+
+          {{/each}}
         </div>
-        <br>
-      {{/each}}
+
+        {{/each}}
     </div>
   </div>
 </div>

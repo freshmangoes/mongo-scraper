@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const logger = require('morgan');
-// const axios = require('axios');
-// const cheerio = require('cheerio');
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI =
@@ -17,7 +15,7 @@ const app = express();
 // morgan for logging requests
 app.use(logger('dev'));
 // make public a static folder
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 // parse req.body as json
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -30,11 +28,7 @@ const routes = require('./controllers/scraperController');
 app.use(routes);
 
 // connect to mongodb
-mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
-
-// make a route to get all articles from db
-
-// make a route to scrape articles from website
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // make a route for saving a comment to the db and associating it with both a user and article
 
